@@ -1,0 +1,20 @@
+services:
+  yurist-ai:
+    build: .
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 5050
+      ONLINE_SEARCH: "true"
+      ONLINE_TIMEOUT_MS: 9000
+      CHAT_RATE_LIMIT: 30
+      FEEDBACK_RATE_LIMIT: 20
+      TRUST_PROXY: 1
+    ports:
+      - "5050:5050"
+    volumes:
+      - yurist_feedback:/app/data
+
+volumes:
+  yurist_feedback:

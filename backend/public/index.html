@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b3027">
+  <meta name="description" content="O'zbekiston qonunchiligi bo'yicha manbali huquqiy yordamchi">
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="Yurist AI — O'zbekiston huquqiy yordamchisi">
+  <meta property="og:description" content="Jismoniy va yuridik shaxslar uchun O'zbekiston qonunchiligi asosida tushunarli huquqiy maslahat.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/yurist-ai-logo.png">
+  <meta name="twitter:card" content="summary">
+  <title>Yurist AI — O'zbekiston</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/png" href="/yurist-ai-icon.png">
+  <link rel="apple-touch-icon" href="/yurist-ai-icon.png">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><img src="/yurist-ai-logo.png" alt="Yurist AI logosi"></div>
+        <div><strong>Yurist AI</strong><span data-i18n="uzLaw">O'zbekiston huquqi</span></div>
+      </div>
+      <div id="accountCard" class="account-card">
+        <div class="account-avatar">?</div>
+        <div><strong id="accountName">Mehmon</strong><span id="accountEmail">Maslahat uchun kiring</span></div>
+        <button id="authAction" type="button">Kirish</button>
+      </div>
+      <button id="newChat" class="new-chat" data-i18n="newChat">+ Yangi maslahat</button>
+      <div class="side-label" data-i18n="clientType">Maslahat oluvchi</div>
+      <div class="person-switch" role="group">
+        <button class="person active" data-type="individual" data-i18n="individual">Jismoniy shaxs</button>
+        <button class="person" data-type="legal" data-i18n="legal">Yuridik shaxs</button>
+      </div>
+      <div class="side-label" data-i18n="chats">Suhbatlar</div>
+      <div id="chatList" class="chat-list"></div>
+      <div class="official-card">
+        <span class="pulse"></span>
+        <div><strong data-i18n="official">Rasmiy manbalar</strong><small data-i18n="officialHint">Lex.uz ochiq sahifalari</small></div>
+        <label class="toggle"><input id="onlineToggle" type="checkbox" checked><span></span></label>
+      </div>
+      <nav class="legal-links">
+        <button id="newsNav" type="button">Yangiliklar</button>
+        <button data-open-info="privacy">Maxfiylik</button>
+        <button data-open-info="terms">Foydalanish shartlari</button>
+        <button data-open-info="trust">Ishonch markazi</button>
+        <button data-open-info="faq">FAQ</button>
+        <button data-open-info="about">Tizim haqida</button>
+      </nav>
+    </aside>
+
+    <main>
+      <header>
+        <button id="menuBtn" class="menu-btn">☰</button>
+        <div>
+          <h1 data-i18n="legalAdvice">Huquqiy maslahat</h1>
+          <p id="status" data-i18n="checking">Qonun bazasi tekshirilmoqda...</p>
+        </div>
+        <div class="header-actions">
+          <select id="languageSelect" aria-label="Til">
+            <option value="uz-latn">O‘zbekcha</option>
+            <option value="uz-cyrl">Ўзбекча</option>
+            <option value="ru">Русский</option>
+          </select>
+          <div class="jurisdiction" data-i18n="jurisdiction">O'ZBEKISTON RESPUBLIKASI</div>
+        </div>
+      </header>
+
+      <section id="messages" class="messages">
+        <div class="welcome">
+          <div class="scales">§</div>
+          <h2 data-i18n="welcomeTitle">Huquqingizni tushunarli tilda biling</h2>
+          <p data-i18n="welcomeText">Vaziyatingizni batafsil yozing. Javob lokal kodekslar va rasmiy davlat manbalari bilan asoslanadi.</p>
+          <div class="suggestions">
+            <button data-prompt="Qarz bergan pulimni qaytarishmayapti. Qanday tartibda undiraman?">Qarzni undirish</button>
+            <button data-prompt="Aliment undirish uchun qayerga va qanday hujjatlar bilan murojaat qilaman?">Aliment masalasi</button>
+            <button data-prompt="MChJ bilan tuzilgan shartnoma buzildi. Yuridik shaxs sifatida qanday choralar ko'raman?">Shartnoma nizosi</button>
+            <button data-prompt="Ma'muriy jarimaga rozi bo'lmasam, shikoyat qilish tartibi qanday?">Jarimaga shikoyat</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="composer-wrap">
+        <div class="notice" data-i18n="notice">Muhim qarordan oldin hujjatning amaldagi tahririni rasmiy manbada tekshiring.</div>
+        <div id="imagePreview" class="image-preview" hidden></div>
+        <form id="chatForm" class="composer">
+          <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+          <button id="attachBtn" class="attach-btn" type="button" title="Rasm qo'shish" aria-label="Rasm qo'shish">📎</button>
+          <textarea id="question" rows="1" maxlength="6000" data-i18n-placeholder="placeholder" placeholder="Huquqiy vaziyatingizni yozing..." required></textarea>
+          <button id="sendBtn" type="submit" aria-label="Yuborish">↑</button>
+        </form>
+        <div class="composer-meta"><span data-i18n="newLine">Shift + Enter — yangi qator</span><span id="counter">0 / 6000</span></div>
+      </section>
+    </main>
+  </div>
+  <dialog id="consentDialog" class="modal">
+    <div class="modal-icon"><img src="/yurist-ai-logo.png" alt=""></div>
+    <h2>Yurist AI public beta</h2>
+    <p>Bu xizmat qonuniy ma’lumot va amaliy yo‘l-yo‘riq beradi. U advokat, notarius yoki davlat organining rasmiy qarorini almashtirmaydi.</p>
+    <ul>
+      <li>Pasport raqami, karta ma’lumoti, parol va boshqa maxfiy ma’lumotlarni yozmang.</li>
+      <li>Qonunlar o‘zgarishi mumkin — muhim qarordan oldin Lex.uz dagi amaldagi tahrirni tekshiring.</li>
+      <li>Favqulodda xavf bo‘lsa, 102 yoki tegishli tezkor xizmatga murojaat qiling.</li>
+      <li>Eng yaqin organni topish uchun joylashuv faqat siz tugmani bosib ruxsat berganingizda olinadi.</li>
+    </ul>
+    <label class="consent-check"><input id="consentCheck" type="checkbox"> Shartlarni tushundim va roziman</label>
+    <button id="acceptConsent" class="primary-action" disabled>Davom etish</button>
+  </dialog>
+
+  <dialog id="infoDialog" class="modal info-modal">
+    <button id="closeInfo" class="close-modal" aria-label="Yopish">×</button>
+    <div id="infoContent"></div>
+  </dialog>
+
+  <dialog id="authDialog" class="modal auth-modal">
+    <button id="closeAuth" class="close-modal" aria-label="Yopish">×</button>
+    <div class="modal-icon"><img src="/yurist-ai-logo.png" alt=""></div>
+    <h2 id="authTitle">Hisobga kirish</h2>
+    <p id="authText">Maslahatlaringiz o'zingizga bog'lanishi uchun hisobga kiring yoki 1 daqiqada ro'yxatdan o'ting.</p>
+    <div class="auth-tabs">
+      <button id="loginTab" class="active" type="button">Kirish</button>
+      <button id="registerTab" type="button">Ro'yxatdan o'tish</button>
+    </div>
+    <form id="authForm" class="auth-form">
+      <label id="nameField">Ism
+        <input id="authName" type="text" autocomplete="name" maxlength="80" placeholder="Ismingiz">
+      </label>
+      <label>Email
+        <input id="authEmail" type="email" autocomplete="email" maxlength="180" placeholder="email@example.com" required>
+      </label>
+      <label>Parol
+        <input id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="Kamida 8 belgi" required>
+      </label>
+      <p id="authError" class="auth-error" hidden></p>
+      <button id="authSubmit" class="primary-action" type="submit">Kirish</button>
+    </form>
+    <p class="auth-note">Parol ochiq matnda saqlanmaydi. Sessiya xavfsiz cookie orqali ishlaydi.</p>
+  </dialog>
+
+  <dialog id="profileDialog" class="modal profile-modal">
+    <button id="closeProfile" class="close-modal" aria-label="Yopish">×</button>
+    <h2>Profil</h2>
+    <p>Email asosiy identifikator sifatida qoladi. Rasm qo'ymasangiz, profil default email/harf bilan ko'rinadi.</p>
+    <form id="profileForm" class="profile-form">
+      <div class="profile-photo-row">
+        <div id="profileAvatarPreview" class="profile-avatar-preview">?</div>
+        <div>
+          <input id="profileAvatarInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+          <button id="chooseAvatar" type="button">Rasm tanlash</button>
+          <button id="removeAvatar" type="button">Default qilish</button>
+          <small>JPG, PNG yoki WEBP. 700 KB gacha.</small>
+        </div>
+      </div>
+      <label>Ism
+        <input id="profileName" type="text" autocomplete="name" maxlength="80" required>
+      </label>
+      <label>Email
+        <input id="profileEmail" type="email" disabled>
+      </label>
+      <p id="profileError" class="auth-error" hidden></p>
+      <div class="profile-actions">
+        <button id="saveProfile" class="primary-action" type="submit">Saqlash</button>
+        <button id="logoutFromProfile" type="button">Chiqish</button>
+      </div>
+      <div class="profile-data-actions">
+        <button id="exportChats" type="button">Chat tarixini yuklab olish</button>
+        <button id="deleteAccount" class="danger-action" type="button">Hisobni o'chirish</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="/app.js"></script>
+</body>
+</html>

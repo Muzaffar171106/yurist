@@ -1,0 +1,18 @@
+{
+  "name": "Yurist AI — O'zbekiston",
+  "short_name": "Yurist AI",
+  "description": "O'zbekiston qonunchiligi bo'yicha manbali huquqiy yordamchi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbfaf6",
+  "theme_color": "#0b3027",
+  "lang": "uz",
+  "icons": [
+    {
+      "src": "/yurist-ai-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

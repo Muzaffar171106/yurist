@@ -1,0 +1,13 @@
+{
+  "name": "yurist-ai-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Yurist AI backend and Flutter client",
+  "scripts": {
+    "backend:install": "npm --prefix backend install",
+    "backend:start": "npm --prefix backend start",
+    "backend:dev": "npm --prefix backend run dev",
+    "backend:check": "npm --prefix backend run check",
+    "backend:test": "npm --prefix backend test"
+  }
+}
