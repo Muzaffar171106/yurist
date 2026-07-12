@@ -3,14 +3,17 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const express = require("express");
 const helmet = require("helmet");
+const swaggerUi = require("swagger-ui-express");
 const { rateLimit } = require("express-rate-limit");
 const { searchKnowledge, getStats, buildIndex } = require("./knowledge");
 const { searchOfficialSources } = require("./official-search");
 const { generateAnswer } = require("./ai");
+const { confidenceLevel, buildLegalStrategy } = require("./legal-reasoner");
 const { saveFeedback, cleanText } = require("./feedback");
 const { getDxmOffices, findNearest, getAgencyRoute } = require("./agencies");
 const { getLegalNews, NEWS_URL } = require("./legal-news");
 const { readImageInfo, estimateInsurance, generateImageCaseAnswer } = require("./image-analysis");
+const { openapiSpec } = require("./docs/openapi");
 const {
   authMiddleware,
   requireAuth,
@@ -110,6 +113,25 @@ app.get("/api/status", (_req, res) => {
     checkedAt: new Date().toISOString()
   });
 });
+
+app.get("/api/openapi.json", (_req, res) => {
+  res.json(openapiSpec);
+});
+
+app.use("/api/docs", (req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+  );
+  next();
+}, swaggerUi.serve, swaggerUi.setup(openapiSpec, {
+  explorer: true,
+  customSiteTitle: "Yurist AI API Docs",
+  swaggerOptions: {
+    persistAuthorization: true,
+    displayRequestDuration: true
+  }
+}));
 
 app.get("/api/auth/me", (req, res) => {
   res.json({ user: publicUser(req.user) });
@@ -213,6 +235,8 @@ app.post("/api/chat", requireAuth, chatLimiter, async (req, res) => {
     const local = searchKnowledge(question, 9);
     const online = req.body?.online === false ? [] : await searchOfficialSources(question);
     const answer = generateAnswer({ question, personType, language, local, online, history });
+    const confidence = confidenceLevel({ question, local, online });
+    const strategy = buildLegalStrategy({ question, personType, local, online });
     const sources = [
       ...local.results.slice(0, 4).map((x, i) => ({
         id: `L${i + 1}`,
@@ -228,16 +252,17 @@ app.post("/api/chat", requireAuth, chatLimiter, async (req, res) => {
         detail: new URL(x.url).hostname
       }))
     ];
-    const confidence = local.results.length >= 4 && online.length > 0
-      ? "high"
-      : local.results.length >= 2 ? "medium" : "low";
-
     res.json({
       answerId: crypto.randomUUID(),
       answer,
       domain: local.domain.name,
       sources,
-      confidence,
+      confidence: confidence.level,
+      confidenceScore: confidence.score,
+      confidenceReasons: confidence.reasons,
+      suggestedAuthority: strategy.agency,
+      missingFacts: strategy.missing,
+      riskFlags: strategy.riskFlags,
       fallback: false,
       checkedAt: new Date().toISOString(),
       privacy: "Savol server bazasida saqlanmadi."

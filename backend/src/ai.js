@@ -1,4 +1,5 @@
 const { normalize, tokens } = require("./knowledge");
+const { buildLegalStrategy } = require("./legal-reasoner");
 
 const ACTIONS = {
   "Oila huquqi": [
@@ -238,6 +239,7 @@ ${actions.map((x, i) => `${i + 1}. ${x}`).join("\n")}
 function generateAnswer({ question, personType, language = "uz-latn", local, online }) {
   if (language === "ru") return generateRussian({ question, personType, local, online });
   const found = local.results.slice(0, 4);
+  const strategy = buildLegalStrategy({ question, personType, local, online });
   const legalBasis = found.map((item, i) => {
     const heading = item.text.split(/\n+/).find((line) => line.trim().length > 5)?.trim() || "";
     return `- [L${i + 1}] ${item.source}${item.article ? `, ${item.article}-modda` : ""}${heading ? ` — ${heading}` : ""}\n  ${articlePlainMeaning(item)}`;
@@ -271,6 +273,17 @@ function generateAnswer({ question, personType, language = "uz-latn", local, onl
   ];
   const plainDomain = PLAIN_DOMAIN[local.domain.name] || PLAIN_DOMAIN["Umumiy huquqiy masala"];
   const example = SIMPLE_EXAMPLES[local.domain.name] || "Masalan, har qanday talabni yozma hujjat, sana va dalil bilan tasdiqlash uni tekshirishni osonlashtiradi.";
+  const aiAudit = `AI tekshiruvi
+- Huquq sohasi: ${strategy.domainName}.
+- Taxminiy ishonchlilik: ${strategy.confidence.level} (${strategy.confidence.score}/100).
+- Sabablar: ${strategy.confidence.reasons.join("; ")}.
+- Xavf signallari: ${strategy.riskText}.
+- Murojaat yo'li: ${strategy.summary}
+- Zaxira yo'l: ${strategy.agency.secondary}.`;
+  const missingBlock = strategy.missing.length
+    ? `\nAniqlashtirilsa javob ancha kuchayadi: ${strategy.missing.join("; ")}.`
+    : "";
+  const documentBlock = strategy.documents.map((x, i) => `${i + 1}. ${x}`).join("\n");
 
   const answer = `${urgentNote(question)}1) Eng qisqa javob
 ${plainDomain}
@@ -279,7 +292,9 @@ Hozir qilinadigan eng to'g'ri ish: dalillarni yig'ish, talabni yozma rasmiylasht
 2) Sizning vaziyatingiz oddiy tilda
 ${entity}
 Natija uch narsaga bog'liq: nima sodir bo'lgani, buni nima bilan isbotlash mumkinligi va murojaat muddati o'tgan-o'tmaganiga. Og'zaki gapdan ko'ra shartnoma, tilxat, chek, yozishma, foto, video yoki rasmiy javob kuchliroq dalil hisoblanadi.
-${sourceWarning} ${onlineWarning}
+${sourceWarning} ${onlineWarning}${missingBlock}
+
+${aiAudit}
 
 3) Qonuniy asos
 ${legalBasis || "- Mos lokal norma aniqlanmadi."}
@@ -289,10 +304,7 @@ ${onlineBasis ? `\nRasmiy onlayn hujjatlar:\n${onlineBasis}` : ""}
 ${actions.map((x, i) => `${i + 1}. ${x}`).join("\n")}
 
 5) Oldindan tayyorlab qo'ying
-- shaxsni yoki tashkilot vakolatini tasdiqlovchi hujjat;
-- shartnoma, qaror, bayonnoma, ariza yoki rasmiy yozishmalar;
-- to'lov hujjatlari, foto/video, guvohlar va boshqa dalillar;
-- oldingi murojaatlar va ularga berilgan javoblar.
+${documentBlock}
 
 6) Sodda misol
 ${example}

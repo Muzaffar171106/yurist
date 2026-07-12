@@ -8,12 +8,13 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "test": "node --test",
-    "check": "node --check src/server.js && node --check src/ai.js && node --check src/image-analysis.js && node --check src/auth.js && node --check public/app.js"
+    "check": "node --check src/server.js && node --check src/ai.js && node --check src/legal-reasoner.js && node --check src/docs/openapi.js && node --check src/image-analysis.js && node --check src/auth.js && node --check public/app.js"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
-    "helmet": "^8.1.0"
+    "helmet": "^8.1.0",
+    "swagger-ui-express": "^5.0.1"
   }
 }
