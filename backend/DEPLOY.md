@@ -1,5 +1,41 @@
 # Production deploy
 
+## AWS Free Tier + CI/CD
+
+Repo ichida AWS EC2 Free Tier uchun tayyor konfiguratsiya bor:
+
+```text
+../deploy/aws/README.md
+../deploy/aws/ec2-setup-ubuntu.sh
+../deploy/aws/docker-compose.prod.yml
+../.github/workflows/deploy-backend-aws.yml
+```
+
+Tavsiya etilgan bepul MVP variant:
+
+```text
+EC2 Ubuntu 22.04/24.04
+t2.micro yoki free-tier eligible t3.micro
+20-30 GB EBS
+Docker Compose + Nginx
+```
+
+CI/CD ishlashi:
+
+1. `main` branchga push bo'ladi.
+2. GitHub Actions backend `npm run check` va `npm test` bajaradi.
+3. Testlar o'tsa EC2 ga SSH orqali ulanadi.
+4. Serverda repo yangilanadi.
+5. Docker compose qayta build/deploy qiladi.
+6. `/api/health` tekshiriladi.
+
+Swagger:
+
+```text
+http://EC2_PUBLIC_IP/api/docs
+http://EC2_PUBLIC_IP/api/openapi.json
+```
+
 ## Minimal variant
 
 ```bash

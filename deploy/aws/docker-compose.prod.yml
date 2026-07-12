@@ -1,0 +1,26 @@
+services:
+  yurist-ai-backend:
+    build:
+      context: ../../backend
+    container_name: yurist-ai-backend
+    restart: unless-stopped
+    env_file:
+      - ../../backend/.env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 5050
+      TRUST_PROXY: 1
+    ports:
+      - "127.0.0.1:5050:5050"
+    volumes:
+      - yurist_ai_data:/app/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:5050/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  yurist_ai_data:

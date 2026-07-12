@@ -29,6 +29,33 @@ npm run check
 npm test
 ```
 
+## AWS Free Tier CI/CD
+
+Backend uchun GitHub Actions orqali AWS EC2 Free Tier deploy tayyor:
+
+- workflow: `.github/workflows/deploy-backend-aws.yml`
+- EC2 setup: `deploy/aws/ec2-setup-ubuntu.sh`
+- production compose: `deploy/aws/docker-compose.prod.yml`
+- Nginx proxy: `deploy/aws/nginx-yurist-ai.conf`
+
+GitHub Secrets kerak:
+
+```text
+AWS_EC2_HOST=EC2_PUBLIC_IP
+AWS_EC2_USER=ubuntu
+AWS_EC2_SSH_KEY=private key matni
+AWS_EC2_SSH_PORT=22
+```
+
+Batafsil yo'riqnoma: `deploy/aws/README.md`
+
+Deploydan keyin Swagger:
+
+```text
+http://EC2_PUBLIC_IP/api/docs
+http://EC2_PUBLIC_IP/api/openapi.json
+```
+
 Backend quyidagilarni o'z ichiga oladi:
 
 - lokal qonun bazasi bo'yicha qidiruv;
