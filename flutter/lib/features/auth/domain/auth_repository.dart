@@ -13,4 +13,5 @@ abstract interface class AuthRepository {
     required String avatarData,
   });
   Future<void> logout();
+  Future<void> deleteAccount();
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/chat_message.dart';
 import '../../domain/chat_repository.dart';
+import '../../domain/chat_response.dart';
 
 part 'chat_event.dart';
 part 'chat_state.dart';
@@ -34,7 +35,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(state.copyWith(messages: messages, loading: true, error: ''));
 
     try {
-      final answer = await _repository.ask(
+      final response = await _repository.ask(
         question: text,
         language: state.language,
         personType: state.personType,
@@ -46,7 +47,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             ...messages,
             ChatMessage(
               role: ChatRole.assistant,
-              content: answer,
+              content: response.answer,
               createdAt: DateTime.now(),
             ),
           ],

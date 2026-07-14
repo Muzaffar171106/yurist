@@ -80,6 +80,14 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (_) {
       // Local cache still needs to be cleared even if the server is offline.
     }
+    await _client.clearSession();
+    await _preferences.remove(_userKey);
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    await _client.dio.delete<void>('/api/auth/account');
+    await _client.clearSession();
     await _preferences.remove(_userKey);
   }
 
